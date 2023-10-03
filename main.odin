@@ -13,6 +13,7 @@ import "core:net"
 import "core:c/libc"
 import "core:io"
 import "core:bytes"
+//import "vendor:raylib"
 
 import "odin-http/client"
 
@@ -149,8 +150,8 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
         return
     }
     r : [32]byte
-    crypto.rand_bytes(r[:])
     runes : [32]rune
+    crypto.rand_bytes(r[:])
     chars := "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
     for n in 0..<32 {
         runes[n] = rune(chars[int(r[n])%62])
@@ -159,6 +160,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
     state := "vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB"
 
     header := strings.builder_make()
+    defer strings.builder_destroy(&header)
     strings.write_string(&header, fmt.tprintf("client_id={0}&", info.creds.client_id))
     strings.write_string(&header, "redirect_uri=http://localhost:3000&")
     strings.write_string(&header, "response_type=code&")
@@ -167,7 +169,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
     headers := strings.to_string(header)
     // libc.system(strings.clone_to_cstring(fmt.tprintf("explorer \"http://{0}/?{1}\"", net.endpoint_to_string(ep), headers)))
     // libc.system(strings.clone_to_cstring(fmt.tprintf("explorer \"{0}?{1}\"", USER_AUTHO_URL, headers)))
-    libc.system(strings.clone_to_cstring(fmt.tprintf("explorer \"http://localhost:3000/?code=17038swieks1jh1hwcdr36hekyui&scope=moderator%3Aread%3Afollowers&state=vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB\""))) 
+    libc.system(strings.clone_to_cstring("explorer \"http://localhost:3000/?code=17038swieks1jh1hwcdr36hekyui&scope=moderator%3Aread%3Afollowers&state=vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB\"")) 
     // Also Work:
     // raylib.OpenURL("http://localhost:3000/?code=17038swieks1jh1hwcdr36hekyui&scope=moderator%3Aread%3Afollowers&state=vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB")
 
@@ -189,6 +191,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
     }
     response_body := fmt.tprint("HeHe HoHo", time.now())
     sb := strings.builder_make()
+    defer strings.builder_destroy(&sb)
     strings.write_string(&sb, "HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n")
     strings.write_string(&sb, fmt.tprintf("Content-Length: %v\r\n", len(response_body)))
     strings.write_string(&sb, "\r\n")
@@ -203,6 +206,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
 
     raw_h := strings.split_lines(string(buf[:read]))[0]
     _,_,_, res_h := net.split_url(strings.split(raw_h, " ")[1])
+    defer delete(res_h)
     if res_h["state"] != state {
         fmt.printf("Possible CSRF.\nGot: {0}\nExpected: {1}\n", res_h["state"], state)
         return
@@ -233,7 +237,7 @@ get_token :: proc(info: ^Info, t_type: Autho_Token_Type) -> (Success: bool) {
             return
         }
     case .User:
-        get_autho_from_user(info) or_return
+        if !get_autho_from_user(info) do return
         fmt.println("before", info.user_creds.code)
         req.headers["content-type"] = "application/x-www-form-urlencoded"
         // str := strings.builder_make()
