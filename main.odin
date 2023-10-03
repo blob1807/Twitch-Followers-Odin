@@ -212,7 +212,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
         fmt.printf("Possible CSRF.\nGot: {0}\nExpected: {1}\n", res_h["state"], state)
         return
     }
-    if ok := "error" in res_h; ok {
+    if "error" in res_h {
         fmt.println(res_h)
         return
     }
