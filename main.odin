@@ -464,7 +464,7 @@ get_follows :: proc(id: int, req: ^client.Request, info: ^Info) -> (int, bool) {
 }
 
 main :: proc() {
-    file, read_ok := os.read_entire_file_from_filename("./info.json")
+    file, read_ok := os.read_entire_file_from_filename("./_info.json")
     if !read_ok {
         fmt.println("Unable to read info.json")
         return
