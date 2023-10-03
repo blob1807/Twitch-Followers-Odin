@@ -211,12 +211,8 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
         fmt.println(res_h)
         return
     }
-
-    req: client.Request
-    client.request_init(&req, .Post)
-    defer client.request_destroy(&req)
     info.user_creds.code = res_h["code"]
-    fmt.println(res_h["code"], info.user_creds.code)
+    fmt.println("on get", res_h["code"], info.user_creds.code)
     info.user_creds.redirect_uri = fmt.tprintf("http://{0}", net.endpoint_to_string(ep))
     return true
 
@@ -238,7 +234,7 @@ get_token :: proc(info: ^Info, t_type: Autho_Token_Type) -> (Success: bool) {
         }
     case .User:
         get_autho_from_user(info) or_return
-        fmt.println(info.user_creds.code)
+        fmt.println("before", info.user_creds.code)
         req.headers["content-type"] = "application/x-www-form-urlencoded"
         // str := strings.builder_make()
         //strings.write_string(&str, fmt.tprintf("client_id={0}&", user_creds.client_id))
@@ -252,7 +248,7 @@ get_token :: proc(info: ^Info, t_type: Autho_Token_Type) -> (Success: bool) {
         bytes.buffer_write_string(&req.body, fmt.aprintf("redirect_uri={0:s}", info.user_creds.redirect_uri))
         //body := strings.to_string(str)
         //bytes.buffer_write_string(&req.body, body)
-        fmt.println(bytes.buffer_to_string(&req.body), info.user_creds.code)
+        fmt.println("after", bytes.buffer_to_string(&req.body), info.user_creds.code)
         //fmt.println(body)
     case .Refresh:
         re_creads := Refresh_Creds{
