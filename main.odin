@@ -169,6 +169,7 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
     headers := strings.to_string(header)
     // libc.system(strings.clone_to_cstring(fmt.tprintf("explorer \"http://{0}/?{1}\"", net.endpoint_to_string(ep), headers)))
     // libc.system(strings.clone_to_cstring(fmt.tprintf("explorer \"{0}?{1}\"", USER_AUTHO_URL, headers)))
+    // replace "explorer" with your platforms url opener
     libc.system(strings.clone_to_cstring("explorer \"http://localhost:3000/?code=17038swieks1jh1hwcdr36hekyui&scope=moderator%3Aread%3Afollowers&state=vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB\"")) 
     // Also Work:
     // raylib.OpenURL("http://localhost:3000/?code=17038swieks1jh1hwcdr36hekyui&scope=moderator%3Aread%3Afollowers&state=vTaJfGFy75lpyHkf16bgR3SOeFMYmWEB")
@@ -216,8 +217,8 @@ get_autho_from_user :: proc (info: ^Info) -> (Success: bool) {
         return
     }
     info.user_creds.code = res_h["code"]
-    fmt.println("on get", res_h["code"], info.user_creds.code)
     info.user_creds.redirect_uri = fmt.tprintf("http://{0}", net.endpoint_to_string(ep))
+    fmt.println("on get", res_h["code"], info.user_creds.code)
     return true
 
 }
