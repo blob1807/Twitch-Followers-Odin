@@ -1,0 +1,8 @@
+{
+	"version": "0.0.1-dev",
+	"description": "A simple CLI to get the current follower count of a channel.\nYou need to have mod to read followers now. Thx Twitch.",
+	"url": "https://github.com/blob1807/Twitch-Followers-Odin",
+	"readme": "README.md",
+	"license": "",
+	"keywords": ["twitch", "cli", "followers"]
+}
