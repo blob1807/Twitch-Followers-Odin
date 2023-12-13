@@ -5,3 +5,5 @@ ols.json
 *.exe
 *.pdb
 .vs
+bin
+.idea
